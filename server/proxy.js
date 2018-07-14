@@ -37,19 +37,21 @@ apiServer.listen(port,hostname,()=>{
 
 const imgServer = http.createServer((req,res)=>{
 
-        const url = req.url.split('/img/')[1];
+         const url = req.url.split('/img/')[1];
+
         const options = {
             url,
-            enconding:null
+            encoding:null,
         };
-        function callback(err,res1,body) {
-            if(!err && res1.statusCode===200){
-                const contentType = res1.headers['content-type'];
-                res.setHeader('content-type',contentType);
-                res.setHeader('Access-Control-Allow-Origin','*');
-                res.end(body);
-            }
-        }
+    function callback(error, response, body) {
+      if (!error && response.statusCode === 200) {
+        const contentType = response.headers['content-type'];
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.end(body);
+      }
+    }
+
         request.get(options,callback);
 })
 

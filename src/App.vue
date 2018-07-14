@@ -4,7 +4,7 @@
         <div class="daily-list">
             <template v-if="type!=='daily'">
               <div v-for=" (list,index) in dailyList" :key="index">
-                <div class="daily-date">{{formatDay(list.date)}} </div>       
+                <div class="daily-date" :style="{'text-align':'center'}">{{formatDay(list.date)}} </div>       
                     <Item
                       v-for="item in list.stories"
                       :data="item"
@@ -129,6 +129,9 @@ export default {
       margin-left: 450px;
       padding: 20px;
     }
+    /* .daily-date{
+      text-align: center;
+    } */
 </style>
 
 
