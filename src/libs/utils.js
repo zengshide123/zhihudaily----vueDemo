@@ -17,4 +17,18 @@ Utils.ajax.interceptors.response.use((res)=>{
     return res.data
 })
 
+// 获取今天的时间戳
+Utils.getTodayTime = function () {
+    const date = new Date();
+          date.setHours(0,0,0,0);
+          return date.getTime();
+}
+Utils.prevDay = function(timestamp=(new Date()).getTime()){
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+    const day = date.getDate()<10?'0'+date.getDate():date.getDate();
+    return year+''+month+''+day
+}
+
 export default Utils
