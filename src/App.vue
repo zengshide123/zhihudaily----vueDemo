@@ -1,7 +1,7 @@
 <template>
     <div class="daily">
         <Menu @recList="listData" @dailyList="getdailyData"/>
-        <div class="daily-list">
+        <div class="daily-list" ref='listwrap'  @scroll='handleScroll'>
             <template v-if="type!=='daily'">
               <div v-for=" (list,index) in dailyList" :key="index">
                 <div class="daily-date" :style="{'text-align':'center'}">{{formatDay(list.date)}} </div>       
@@ -9,6 +9,7 @@
                       v-for="item in list.stories"
                       :data="item"
                       :key="item.id"
+                      @click.native="handleClick(item.id)"
                     />
               </div>
             </template>  
@@ -17,10 +18,11 @@
                     v-for="item in list"
                     :data="item"
                     :key="item.id"
+                    @click.native="handleClick(item.id)"
                   />
               </template>            
          </div>
-         <!-- <daily-aticle></daily-aticle> -->
+         <daily-aticle :id="articleId"></daily-aticle>
     </div>
 </template>
 
@@ -28,6 +30,7 @@
 import Menu from './components/Menu'
 import Utils from '@/libs/utils.js'
 import Item from './components/Item'
+import DailyArticle from '@/components/Aticle'
 export default {
         data(){
             return{
@@ -35,12 +38,14 @@ export default {
               dailyList:[],
               dailyTime:Utils.getTodayTime(),
               isLoading:false,
-              type:'recommend'
+              type:'recommend',
+              articleId:0
             }
         },
         components:{
           Menu,
-          Item
+          Item,
+          dailyAticle:DailyArticle
         },
         methods:{
           listData(data,type){
@@ -54,6 +59,9 @@ export default {
             Utils.ajax.get('news/before/'+prevDay).then(res=>{
              this.dailyList.push(res);
              this.isLoading = false;
+             if(!this.articleId){
+                this.articleId = this.dailyList[0].stories[0].id
+             }
            })  
           },
           formatDay(date){
@@ -66,10 +74,23 @@ export default {
               day = month.substr(1,1)
             }
             return `${month}月${day}日`
+          },
+          handleScroll(){
+            const listwrap = this.$refs.listwrap;
+               if(this.type==='daily'||this.isLoading){
+                return
+            }
+            if(listwrap.scrollTop+document.body.clientHeight>listwrap.scrollHeight-50){
+              this.dailyTime -=86400000;
+              this.getdailyData()            
+            }
+          },
+          handleClick(id){
+             this.articleId = id;
           }
         },
         mounted(){
-          this.getdailyData()
+          this.getdailyData();
         }
 }
 </script>
@@ -129,9 +150,19 @@ export default {
       margin-left: 450px;
       padding: 20px;
     }
-    /* .daily-date{
+    .daily-date{
       text-align: center;
-    } */
+      margin: 10px 0;
+    }
+    .daily-list{
+      width: 300px;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 150px;
+      overflow: auto;
+      border-right: 1px solid #d7dde4;
+    }
 </style>
 
 
